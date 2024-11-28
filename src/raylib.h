@@ -342,9 +342,15 @@ typedef struct Camera2D {
 } Camera2D;
 
 // Mesh, vertex data and vao/vbo
-typedef struct Mesh {
-    int vertexCount;        // Number of vertices stored in arrays
-    int triangleCount;      // Number of triangles stored (indexed or not)
+typedef struct Mesh
+{
+    // rjk
+    bool isHidden; // flag to hide mesh
+    char *extras;  // extra data
+    // end rjk
+
+    int vertexCount;   // Number of vertices stored in arrays
+    int triangleCount; // Number of triangles stored (indexed or not)
 
     // Vertex attributes data
     float *vertices;        // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)

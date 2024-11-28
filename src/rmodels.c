@@ -1914,6 +1914,14 @@ void DrawMeshInstanced(Mesh mesh, Material material, const Matrix *transforms, i
 // Unload mesh from memory (RAM and VRAM)
 void UnloadMesh(Mesh mesh)
 {
+    // rjk
+    if (mesh.extras != NULL)
+    {
+        RL_FREE(mesh.extras);
+        mesh.extras = NULL;
+    }
+    // rjk
+
     // Unload rlgl mesh vboId data
     rlUnloadVertexArray(mesh.vaoId);
 
@@ -3713,6 +3721,10 @@ void DrawModelEx(Model model, Vector3 position, Vector3 rotationAxis, float rota
 
     for (int i = 0; i < model.meshCount; i++)
     {
+// rjk
+        if (model.meshes[i].isHidden)
+            continue;
+        // end rjk
         Color color = model.materials[model.meshMaterial[i]].maps[MATERIAL_MAP_DIFFUSE].color;
 
         Color colorTint = WHITE;
@@ -5389,6 +5401,22 @@ static Model LoadGLTF(const char *fileName)
             cgltf_mesh *mesh = node->mesh;
             if (!mesh)
                 continue;
+
+// rjk
+            cgltf_size extras_size = 0;
+
+            // call once with null to get the size.
+            // note that we pull the extras from the node, not the mesh itself.
+            // TODO: merge them?
+            cgltf_copy_extras_json(data, &node->extras, NULL, &extras_size);
+
+            if (extras_size > 0)
+            {
+                model.meshes[meshIndex].extras = RL_MALLOC(extras_size);
+                cgltf_copy_extras_json(data, &node->extras, model.meshes[meshIndex].extras, &extras_size);
+            }
+            // printf("EXTRAS: %s\n", model.meshes[meshIndex].extras);
+            //   end rjk
 
             cgltf_float worldTransform[16];
             cgltf_node_transform_world(node, worldTransform);
