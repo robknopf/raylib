@@ -4327,6 +4327,14 @@ return {
       returnType = "int"
     },
     {
+      name = "GetKeyName",
+      description = "Get name of a QWERTY key on the current keyboard layout (eg returns string 'q' for KEY_A on an AZERTY keyboard)",
+      returnType = "const char *",
+      params = {
+        {type = "int", name = "key"}
+      }
+    },
+    {
       name = "SetExitKey",
       description = "Set a custom key to exit program (default is ESC)",
       returnType = "void",
