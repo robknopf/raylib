@@ -73,9 +73,12 @@ RAYLIB_API_VERSION    = 550
 # Define raylib source code path
 RAYLIB_SRC_PATH      ?= ../src
 
+# Define object files output directory
+RAYLIB_BUILD_PATH ?= ./build
+
 # Define output directory for compiled library, defaults to src directory
 # NOTE: If externally provided, make sure directory exists
-RAYLIB_RELEASE_PATH  ?= $(RAYLIB_SRC_PATH)
+RAYLIB_RELEASE_PATH  ?= $(RAYLIB_BUILD_PATH)
 
 # Library type used for raylib: STATIC (.a) or SHARED (.so/.dll)
 RAYLIB_LIBTYPE       ?= STATIC
@@ -205,12 +208,12 @@ ifeq ($(TARGET_PLATFORM),PLATFORM_ANDROID)
         ANDROID_NDK ?= C:/android-ndk
         ANDROID_TOOLCHAIN = $(ANDROID_NDK)/toolchains/llvm/prebuilt/windows-x86_64
     else
-		ANDROID_NDK ?= /usr/lib/android/ndk
-		ifeq ($(PLATFORM_OS), OSX)
-			ANDROID_TOOLCHAIN = $(ANDROID_NDK)/toolchains/llvm/prebuilt/darwin-x86_64
-		else
-			ANDROID_TOOLCHAIN = $(ANDROID_NDK)/toolchains/llvm/prebuilt/linux-x86_64
-		endif
+        ANDROID_NDK ?= /usr/lib/android/ndk
+        ifeq ($(PLATFORM_OS), OSX)
+            ANDROID_TOOLCHAIN = $(ANDROID_NDK)/toolchains/llvm/prebuilt/darwin-x86_64
+        else
+            ANDROID_TOOLCHAIN = $(ANDROID_NDK)/toolchains/llvm/prebuilt/linux-x86_64
+        endif
     endif
 
     # NOTE: Sysroot can also be reference from $(ANDROID_NDK)/sysroot
@@ -462,11 +465,11 @@ CFLAGS += $(CUSTOM_CFLAGS)
 # Define include paths for required headers: INCLUDE_PATHS
 # NOTE: Several external required libraries (stb and others)
 #------------------------------------------------------------------------------------------------
-INCLUDE_PATHS = -I. $(EXTRA_INCLUDE_PATHS)
+INCLUDE_PATHS = -I. -I$(RAYLIB_SRC_PATH) $(EXTRA_INCLUDE_PATHS)
 
 # Define additional directories containing required header files
 ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_GLFW)
-    INCLUDE_PATHS += -Iexternal/glfw/include
+    INCLUDE_PATHS += -I$(RAYLIB_SRC_PATH)/external/glfw/include
     ifeq ($(PLATFORM_OS),BSD)
         INCLUDE_PATHS += -I/usr/local/include -I/usr/pkg/include -I/usr/X11R7/include
     endif
@@ -475,7 +478,7 @@ ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_SDL)
     INCLUDE_PATHS += -I$(SDL_INCLUDE_PATH)
 endif
 ifeq ($(TARGET_PLATFORM),PLATFORM_WEB)
-    INCLUDE_PATHS += -Iexternal/glfw/include
+    INCLUDE_PATHS += -I$(RAYLIB_SRC_PATH)/external/glfw/include
 endif
 ifeq ($(TARGET_PLATFORM),PLATFORM_DRM)
     INCLUDE_PATHS += -I/usr/include/libdrm
@@ -626,35 +629,40 @@ endif
 
 # Define source code object files required
 #------------------------------------------------------------------------------------------------
-OBJS = rcore.o \
-       rshapes.o \
-       rtextures.o \
-       rtext.o \
-       utils.o 
+OBJS = $(RAYLIB_BUILD_PATH)/rcore.o \
+       $(RAYLIB_BUILD_PATH)/rshapes.o \
+       $(RAYLIB_BUILD_PATH)/rtextures.o \
+       $(RAYLIB_BUILD_PATH)/rtext.o \
+       $(RAYLIB_BUILD_PATH)/utils.o
 
 ifeq ($(TARGET_PLATFORM),PLATFORM_DESKTOP_GLFW)
     ifeq ($(USE_EXTERNAL_GLFW),FALSE)
-        OBJS += rglfw.o
+        OBJS += $(RAYLIB_BUILD_PATH)/rglfw.o
     endif
 endif
 ifeq ($(RAYLIB_MODULE_MODELS),TRUE)
-    OBJS += rmodels.o
+    OBJS += $(RAYLIB_BUILD_PATH)/rmodels.o
 endif
 ifeq ($(RAYLIB_MODULE_AUDIO),TRUE)
-    OBJS += raudio.o
+    OBJS += $(RAYLIB_BUILD_PATH)/raudio.o
 endif
 ifeq ($(RAYLIB_MODULE_RAYGUI),TRUE)
-    OBJS += raygui.o
+    OBJS += $(RAYLIB_BUILD_PATH)/raygui.o
 endif
 
 ifeq ($(TARGET_PLATFORM),PLATFORM_ANDROID)
-    OBJS += android_native_app_glue.o
+    OBJS += $(RAYLIB_BUILD_PATH)/android_native_app_glue.o
 endif
 
 # Define processes to execute
 #------------------------------------------------------------------------------------------------
 # Default target entry
-all: raylib
+all: ensure_build_dir raylib
+
+# Ensure RAYLIB_BUILD_PATH exists
+ensure_build_dir:
+	@mkdir -p $(RAYLIB_BUILD_PATH)
+
 
 # Compile raylib library
 # NOTE: Release directory is created if not exist
@@ -723,56 +731,56 @@ endif
 # Compile all modules with their prerequisites
 
 # Prerequisites of core module
-rcore.o : platforms/*.c
+$(RAYLIB_BUILD_PATH)/rcore.o : $(RAYLIB_SRC_PATH)/platforms/*.c 
 
 # Compile core module
-rcore.o : rcore.c raylib.h rlgl.h utils.h raymath.h rcamera.h rgestures.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rcore.o : $(RAYLIB_SRC_PATH)/rcore.c $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_SRC_PATH)/rlgl.h $(RAYLIB_SRC_PATH)/utils.h $(RAYLIB_SRC_PATH)/raymath.h $(RAYLIB_SRC_PATH)/rcamera.h $(RAYLIB_SRC_PATH)/rgestures.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile rglfw module
-rglfw.o : rglfw.c
-	$(CC) $(GLFW_OSX) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rglfw.o : $(RAYLIB_SRC_PATH)/rglfw.c 
+	$(CC) $(GLFW_OSX) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile shapes module
-rshapes.o : rshapes.c raylib.h rlgl.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rshapes.o : $(RAYLIB_SRC_PATH)/rshapes.c $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_SRC_PATH)/rlgl.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile textures module
-rtextures.o : rtextures.c raylib.h rlgl.h utils.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rtextures.o : $(RAYLIB_SRC_PATH)/rtextures.c $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_SRC_PATH)/rlgl.h $(RAYLIB_SRC_PATH)/utils.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile text module
-rtext.o : rtext.c raylib.h utils.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rtext.o : $(RAYLIB_SRC_PATH)/rtext.c $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_SRC_PATH)/utils.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile utils module
-utils.o : utils.c utils.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/utils.o : $(RAYLIB_SRC_PATH)/utils.c $(RAYLIB_SRC_PATH)/utils.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile models module
-rmodels.o : rmodels.c raylib.h rlgl.h raymath.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/rmodels.o : $(RAYLIB_SRC_PATH)/rmodels.c $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_SRC_PATH)/rlgl.h $(RAYLIB_SRC_PATH)/raymath.h
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile audio module
-raudio.o : raudio.c raylib.h
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/raudio.o : $(RAYLIB_SRC_PATH)/raudio.c $(RAYLIB_SRC_PATH)/raylib.h 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Compile raygui module
 # NOTE: raygui header should be distributed with raylib.h
-raygui.o : raygui.c
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
-raygui.c:
+$(RAYLIB_BUILD_PATH)/raygui.o : $(RAYLIB_BUILD_PATH)/raygui.c
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
+$(RAYLIB_BUILD_PATH)/raygui.c:
 ifeq ($(PLATFORM_SHELL), cmd)
-	@echo #define RAYGUI_IMPLEMENTATION > raygui.c
-	@echo #include "$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h" >> raygui.c
+	@echo #define RAYGUI_IMPLEMENTATION > $(RAYLIB_BUILD_PATH)/raygui.c
+	@echo #include "$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h" >> $(RAYLIB_BUILD_PATH)/raygui.c
 else
-	@echo "#define RAYGUI_IMPLEMENTATION" > raygui.c
-	@echo "#include \"$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h\"" >> raygui.c
+	@echo "#define RAYGUI_IMPLEMENTATION" > $(RAYLIB_BUILD_PATH)/raygui.c
+	@echo "#include \"$(RAYLIB_MODULE_RAYGUI_PATH)/raygui.h\"" >> $(RAYLIB_BUILD_PATH)/raygui.c
 endif
 
 # Compile android_native_app_glue module
-android_native_app_glue.o : $(NATIVE_APP_GLUE)/android_native_app_glue.c
-	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS)
+$(RAYLIB_BUILD_PATH)/android_native_app_glue.o : $(NATIVE_APP_GLUE)/android_native_app_glue.c 
+	$(CC) -c $< $(CFLAGS) $(INCLUDE_PATHS) -o $@
 
 # Install generated and needed files to desired directories.
 # On GNU/Linux and BSDs, there are some standard directories that contain extra
@@ -812,9 +820,9 @@ ifeq ($(ROOT),root)
 			cp --update --verbose $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_INSTALL_PATH)/lib$(RAYLIB_LIB_NAME).a
         endif
         # Copying raylib development files to $(RAYLIB_H_INSTALL_PATH).
-		cp --update raylib.h $(RAYLIB_H_INSTALL_PATH)/raylib.h
-		cp --update raymath.h $(RAYLIB_H_INSTALL_PATH)/raymath.h
-		cp --update rlgl.h $(RAYLIB_H_INSTALL_PATH)/rlgl.h
+		cp --update $(RAYLIB_SRC_PATH)/raylib.h $(RAYLIB_H_INSTALL_PATH)/raylib.h
+		cp --update $(RAYLIB_SRC_PATH)/raymath.h $(RAYLIB_H_INSTALL_PATH)/raymath.h
+		cp --update $(RAYLIB_SRC_PATH)/rlgl.h $(RAYLIB_H_INSTALL_PATH)/rlgl.h
 		@echo "raylib development files installed/updated!"
     else
 		@echo "This function currently works on GNU/Linux systems. Add yours today (^;"
@@ -850,22 +858,22 @@ else
 	@echo "Error: Root permissions needed for uninstallation. Try sudo make uninstall"
 endif
 
-.PHONY: clean_shell_cmd clean_shell_sh
+.PHONY: require_build_directory clean_shell_cmd clean_shell_sh raylib
 
 # Clean everything
 clean:	clean_shell_$(PLATFORM_SHELL)
 	@echo "removed all generated files!"
 
 clean_shell_sh:
-	rm -fv *.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).bc $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* raygui.c $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h
+	rm -fv $(RAYLIB_BUILD_PATH)/*.o $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).a $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).bc $(RAYLIB_RELEASE_PATH)/lib$(RAYLIB_LIB_NAME).so* raygui.c $(RAYLIB_RELEASE_PATH)/*-protocol.h $(RAYLIB_RELEASE_PATH)/*-protocol-code.h
 ifeq ($(TARGET_PLATFORM),PLATFORM_ANDROID)
-	rm -fv $(NATIVE_APP_GLUE)/android_native_app_glue.o
+	rm -fv $(RAYLIB_BUILD_PATH)/android_native_app_glue.o
 endif
 
 # Set specific target variable
 clean_shell_cmd: SHELL=cmd
 clean_shell_cmd:
-	del *.o /s
+	del $(RAYLIB_BUILD_PATH)\*.o /s
 	cd $(RAYLIB_RELEASE_PATH) & \
 	del lib$(RAYLIB_LIB_NAME).a /s & \
 	del lib$(RAYLIB_LIB_NAME)dll.a /s & \
