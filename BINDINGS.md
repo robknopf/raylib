@@ -26,6 +26,7 @@ Some people ported raylib to other languages in the form of bindings or wrappers
 | [raylib-cr](https://github.com/sol-vin/raylib-cr)                                        | 4.6-dev (5e1a81) | [Crystal](https://crystal-lang.org)                                  | Apache-2.0           |
 | [ray-cyber](https://github.com/fubark/ray-cyber)                                         | **5.0**          | [Cyber](https://cyberscript.dev)                                     | MIT                  |
 | [dart-raylib](https://gitlab.com/wolfenrain/dart-raylib)                                 | 4.0              | [Dart](https://dart.dev)                                             | MIT                  |
+| [raylib_dart](https://pub.dev/packages/raylib_dart)                                      | 6.0              | [Dart](https://dart.dev)                                             | MIT                  |
 | [bindbc-raylib3](https://github.com/o3o/bindbc-raylib3)                                  | **5.0**          | [D](https://dlang.org)                                               | BSL-1.0              |
 | [dray](https://github.com/redthing1/dray)                                                | **5.0**          | [D](https://dlang.org)                                               | Apache-2.0           |
 | [raylib-d](https://github.com/schveiguy/raylib-d)                                        | **6.0**          | [D](https://dlang.org)                                               | Zlib                 |
@@ -51,7 +52,7 @@ Some people ported raylib to other languages in the form of bindings or wrappers
 | [KaylibKit](https://codeberg.org/Kenta/KaylibKit)                                        | 4.5              | [Kotlin/native](https://kotlinlang.org)                              | Zlib                 |
 | [raylib-lua](https://github.com/TSnake41/raylib-lua)                                     | 5.5              | [Lua](http://www.lua.org)                                            | ISC                  |
 | [raylib-lua-bindings (WIP)](https://github.com/legendaryredfox/raylib-lua-bindings)      | 5.5              | [Lua](http://www.lua.org)                                            | ISC                  |
-| [ReiLua](https://github.com/nullstare/ReiLua)                                            | 5.5              | [Lua](http://www.lua.org)                                            | MIT                  |
+| [ReiLua](https://github.com/nullstare/ReiLua)                                            | 6.0              | [Lua](http://www.lua.org)                                            | MIT                  |
 | [raylib-lua-sol](https://github.com/RobLoach/raylib-lua-sol)                             | 5.5              | [Lua](http://www.lua.org)                                            | Zlib                 |
 | [raylib-luajit](https://github.com/homma/raylib-luajit)                                  | 5.5              | [Lua](http://www.lua.org)                                            | MIT                  |
 | [raylib-luajit-generated](https://github.com/james2doyle/raylib-luajit-generated)        | 5.5              | [Lua](http://www.lua.org)                                            | MIT                  |
@@ -84,6 +85,7 @@ Some people ported raylib to other languages in the form of bindings or wrappers
 | [raylib-swift](https://github.com/STREGAsGate/Raylib)                                    | 4.0              | [Swift](https://swift.org)                                           | MIT                  |
 | [raylib-scopes](https://github.com/salotz/raylib-scopes)                                 | auto             | [Scopes](http://scopes.rocks)                                        | MIT                  |
 | [raylib-SmallBASIC](https://github.com/smallbasic/smallbasic.plugins/tree/master/raylib) | **5.5**          | [SmallBASIC](https://github.com/smallbasic/SmallBASIC)               | GPLv3                |
+| [rayscal](https://github.com/RobertFlexx/rayscal)                                        | **6.0**          | [Scala Native](https://scala-native.org)                             | MIT                  |
 | [raylib-umka](https://github.com/robloach/raylib-umka)                                   | 4.5              | [Umka](https://github.com/vtereshkov/umka-lang)                      | Zlib                 |
 | [raylib-v](https://github.com/vlang/raylib)                                              | 5.5              | [V](https://vlang.io)                                                | MIT/Unlicense        |
 | [raylib.v](https://github.com/irishgreencitrus/raylib.v)                                 | 4.2              | [V](https://vlang.io)                                                | Zlib                 |
@@ -102,14 +104,14 @@ Some people ported raylib to other languages in the form of bindings or wrappers
 | [Raylib.lean](https://github.com/KislyjKisel/Raylib.lean)                                | **5.5-dev**      | [Lean4](https://lean-lang.org)                                       | BSD-3-Clause         |
 | [raylib-cobol](https://codeberg.org/glowiak/raylib-cobol)                                | **auto**         | [COBOL](https://gnucobol.sourceforge.io)                             | Public domain        |
 | [raylib-apl](https://github.com/Brian-ED/raylib-apl)                                     | **5.0**          | [Dyalog APL](https://www.dyalog.com/)                                | MIT                  |
-| [raylib-jai](https://github.com/ahmedqarmout2/raylib-jai)                                | **5.5**          | [Jai](https://github.com/BSVino/JaiPrimer/blob/master/JaiPrimer.md)  | MIT                  |
+| [raylib-jai](https://github.com/ahmedqarmout2/raylib-jai)                                | **6.0**          | [Jai](https://github.com/BSVino/JaiPrimer/blob/master/JaiPrimer.md)  | MIT                  |
 | [fnl-raylib](https://github.com/0riginaln0/fnl-raylib)                                   | **5.5**          | [Fennel](https://fennel-lang.org/)                                   | MIT                  |
 | [Rayua](https://github.com/uiua-lang/rayua)                                              | **5.5**          | [Uiua](https://www.uiua.org/)                                        | **???**              | 
 | [Target](https://github.com/FinnDemonCat/Target/tree/main/libs/raylib)                   | **5.5**          | [Dart](https://dart.dev/)                                            | Apache-2.0 license   | 
 | [gclang-raylib](https://github.com/gnuchanos/gcLang_Compiler/tree/main/windows_version/raylib_version)| **6.0**          | [gclang](https://github.com/gnuchanos/gcLang_Compiler)                                 | AGPL-3.0             |
 
 
-### Utility Wrapers
+### Utility Wrappers
 
 These are utility wrappers for specific languages, they are not required to use raylib in the language but may adapt the raylib API to be more inline with the language's paradigm.
 | Name                                                 | raylib Version | Language                                     | License |
