@@ -2082,7 +2082,8 @@ char **TextSplit(const char *text, char delimiter, int *count)
         counter = 1;
 
         // Count how many substrings ar found on text and set pointers to every one
-        for (int i = 0; i < MAX_TEXT_BUFFER_LENGTH; i++)
+        // NOTE: Last buffer byte is reserved to terminate the last substring
+        for (int i = 0; i < MAX_TEXT_BUFFER_LENGTH - 1; i++)
         {
             buffer[i] = text[i];
             if (buffer[i] == '\0') break;
@@ -2186,9 +2187,11 @@ char *TextToPascal(const char *text)
             if (text[j] != '_') buffer[i] = text[j];
             else
             {
-                j++;
+                while (text[j] == '_') j++;     // Skip one or more separators
+                if (text[j] == '\0') break;     // Text ends on a separator, nothing left to copy
+
                 if ((text[j] >= 'a') && (text[j] <= 'z')) buffer[i] = text[j] - 32;
-                else if ((text[j] >= '0') && (text[j] <= '9')) buffer[i] = text[j];
+                else buffer[i] = text[j];       // Character can not be upper-cased, copy it as is
             }
         }
     }
@@ -2268,8 +2271,11 @@ char *TextToCamel(const char *text)
             if (text[j] != '_') buffer[i] = text[j];
             else
             {
-                j++;
+                while (text[j] == '_') j++;     // Skip one or more separators
+                if (text[j] == '\0') break;     // Text ends on a separator, nothing left to copy
+
                 if ((text[j] >= 'a') && (text[j] <= 'z')) buffer[i] = text[j] - 32;
+                else buffer[i] = text[j];       // Character can not be upper-cased, copy it as is
             }
         }
     }
